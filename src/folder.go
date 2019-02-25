@@ -26,7 +26,7 @@ func MakeLocalRepo(folder string, commitMessage string, user *gitlab.User, verbo
 func deleteRepo(folder string, verbose bool) (err error) {
 	if _, e := git.PlainOpen(folder); e == nil {
 		if verbose {
-			fmt.Printf("Deleting existing repository in %s\n", folder)
+			fmt.Printf("  Deleting existing repository in %s\n", folder)
 		}
 		err = os.RemoveAll(filepath.Join(folder, ".git"))
 	}
@@ -37,7 +37,7 @@ func deleteRepo(folder string, verbose bool) (err error) {
 func createRepository(folder string, commitMessage string, user *gitlab.User, verbose bool) (repo *git.Repository, err error) {
 
 	if verbose {
-		fmt.Printf("Creating new repository in %s\n", folder)
+		fmt.Printf("  Creating new repository in %s\n", folder)
 	}
 
 	// create the new repository
@@ -53,7 +53,7 @@ func createRepository(folder string, commitMessage string, user *gitlab.User, ve
 	}
 
 	if verbose {
-		fmt.Printf("Adding all files in %s\n", folder)
+		fmt.Printf("  Adding all files in %s\n", folder)
 	}
 
 	status, err := w.Status()
@@ -65,17 +65,17 @@ func createRepository(folder string, commitMessage string, user *gitlab.User, ve
 				return nil, err
 			}
 			if verbose {
-				fmt.Printf("  Adding %q ...\n", path)
+				fmt.Printf("    Adding %q ...\n", path)
 			}
 		}
 	}
 
 	// and commit
 	if verbose {
-		fmt.Printf("Creating new commit %q from %s<%s> \n", commitMessage, user.Name, user.Email)
+		fmt.Printf("  Creating new commit %q from %s<%s> \n", commitMessage, user.Name, user.Email)
 	}
 
-	_, err = w.Commit(commitMessage, &git.CommitOptions{
+	c, err := w.Commit(commitMessage, &git.CommitOptions{
 		All: true,
 		Author: &object.Signature{
 			Name:  user.Name,
@@ -83,6 +83,10 @@ func createRepository(folder string, commitMessage string, user *gitlab.User, ve
 			When:  time.Now(),
 		},
 	})
+
+	if err == nil && verbose {
+		fmt.Printf("  Created commit %s\n", c.String())
+	}
 
 	return
 }

@@ -43,13 +43,13 @@ func getOrCreate(gl *gitlab.Client, name string, verbose bool) (pro *gitlab.Proj
 	pro, err = getProject(gl, name)
 	if err == nil {
 		if verbose {
-			fmt.Printf("Not creating %s: Already exists\n", pro.PathWithNamespace)
+			fmt.Printf("  Not creating %s: Already exists\n", pro.PathWithNamespace)
 		}
 		return
 	}
 
 	if verbose {
-		fmt.Printf("Creating Project %s. \n", name)
+		fmt.Printf("  Creating Project %s. \n", name)
 	}
 	return createProject(gl, name, verbose)
 }
@@ -69,7 +69,7 @@ func createProject(gl *gitlab.Client, name string, verbose bool) (pro *gitlab.Pr
 	ns, _, err := gl.Namespaces.GetNamespace(repoPath)
 	if err != nil {
 		if verbose {
-			fmt.Printf("Cannot create Project %s: Namespace %s does not exist\n", name, repoPath)
+			fmt.Printf("  Cannot create Project %s: Namespace %s does not exist\n", name, repoPath)
 		}
 		return
 	}
@@ -88,12 +88,12 @@ func createProject(gl *gitlab.Client, name string, verbose bool) (pro *gitlab.Pr
 func unprotectMainBranch(gl *gitlab.Client, pro *gitlab.Project, verbose bool) (err error) {
 	if pro.DefaultBranch != "" {
 		if verbose {
-			fmt.Printf("Unprotecting main branch %s of %s\n", pro.DefaultBranch, pro.PathWithNamespace)
+			fmt.Printf("  Unprotecting main branch %s of %s\n", pro.DefaultBranch, pro.PathWithNamespace)
 		}
 		_, _, err = gl.Branches.UnprotectBranch(pro.ID, pro.DefaultBranch)
 	} else {
 		if verbose {
-			fmt.Printf("Not unprotecting main branch of %s: No main branch\n", pro.PathWithNamespace)
+			fmt.Printf("  Not unprotecting main branch of %s: No main branch\n", pro.PathWithNamespace)
 		}
 	}
 	return
