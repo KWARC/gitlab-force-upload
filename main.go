@@ -13,7 +13,7 @@ func main() {
 	fmt.Printf("gitlab-force-upload: use -legal to view licensing and legal information\n")
 
 	if verbose {
-		fmt.Printf("verbose: %b\n", verbose)
+		fmt.Printf("verbose: %t\n", verbose)
 		fmt.Printf("gitlabURL: %q\n", gitlabURL)
 		fmt.Printf("authToken: %q\n", authToken)
 		fmt.Printf("folder: %q\n", folder)

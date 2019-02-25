@@ -1,5 +1,7 @@
 # gitlab-force-upload
 
+[![Build Status](https://travis-ci.org/KWARC/gitlab-force-upload.svg?branch=master)](https://travis-ci.org/KWARC/gitlab-force-upload)
+
 A Golang script to force upload a folder into a GitLab repository. 
 
 
