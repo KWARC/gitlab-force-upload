@@ -4,10 +4,16 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
+
+	"github.com/KWARC/gitlab-force-upload/src"
 )
 
 func main() {
-	fmt.Println("to be implemented")
+	_, err := src.PrepareRepo(authToken, gitlabURL, dest, verbose)
+	if err != nil {
+		panic(err)
+	}
 }
 
 var verbose bool
@@ -27,6 +33,10 @@ func init() {
 	if authToken == "" {
 		fmt.Println("Missing -token argument")
 		os.Exit(1)
+	}
+
+	if !strings.HasSuffix(gitlabURL, "/") {
+		gitlabURL = gitlabURL + "/"
 	}
 
 	// TODO: Check that folder exists
