@@ -10,10 +10,48 @@ import (
 )
 
 func main() {
-	_, err := src.PrepareRepo(authToken, gitlabURL, dest, verbose)
+	if verbose {
+		fmt.Printf("verbose: %b\n", verbose)
+		fmt.Printf("gitlabURL: %q\n", gitlabURL)
+		fmt.Printf("authToken: %q\n", authToken)
+		fmt.Printf("folder: %q\n", folder)
+		fmt.Printf("dest: %q\n", dest)
+		fmt.Printf("-------\n")
+	}
+
+	// prepare the remote repository
+	if verbose {
+		fmt.Println("Preparing repository")
+	}
+
+	uri, user, token, err := src.PrepareRepo(authToken, gitlabURL, dest, verbose)
 	if err != nil {
 		panic(err)
 	}
+
+	if verbose {
+		fmt.Printf("Created %s for user %s and token %s\n", uri, user.Username, token)
+	}
+
+	if folder == "" {
+		if verbose {
+			fmt.Println("No local folder provided, exiting. ")
+		}
+		return
+	}
+
+	// create the local repository
+	if verbose {
+		fmt.Println("Making local repository")
+	}
+
+	_, err = src.MakeLocalRepo(folder, "Initial commit", user, verbose)
+	if err != nil {
+		panic(err)
+	}
+
+	// and push it
+
 }
 
 var verbose bool
@@ -37,12 +75,6 @@ func init() {
 
 	if !strings.HasSuffix(gitlabURL, "/") {
 		gitlabURL = gitlabURL + "/"
-	}
-
-	// TODO: Check that folder exists
-	if folder == "" {
-		fmt.Println("Missing -folder argument")
-		os.Exit(1)
 	}
 
 	if dest == "" {

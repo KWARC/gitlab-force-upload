@@ -8,11 +8,19 @@ import (
 )
 
 // PrepareRepo makes sure that the repo exists and can be force pushed to
-func PrepareRepo(token string, url string, repo string, verbose bool) (uri string, err error) {
+func PrepareRepo(tokenIn string, url string, repo string, verbose bool) (uri string, user *gitlab.User, token string, err error) {
+	// return the token again
+	token = tokenIn
+
 	// create a new client
 	gl := gitlab.NewClient(nil, token)
 	gl.SetBaseURL(url + "api/v4/")
 
+	// get the current user
+	user, _, err = gl.Users.CurrentUser()
+	if err != nil {
+		return
+	}
 	// get or create the repo
 	pro, err := getOrCreate(gl, repo, verbose)
 	if err != nil {
@@ -20,7 +28,7 @@ func PrepareRepo(token string, url string, repo string, verbose bool) (uri strin
 	}
 
 	// unblock the main branch
-	err = UnprotectMainBranch(gl, pro, verbose)
+	err = unprotectMainBranch(gl, pro, verbose)
 	if err != nil {
 		return
 	}
@@ -76,8 +84,8 @@ func createProject(gl *gitlab.Client, name string, verbose bool) (pro *gitlab.Pr
 	return
 }
 
-// UnprotectMainBranch unprotects the main branch opf the given project
-func UnprotectMainBranch(gl *gitlab.Client, pro *gitlab.Project, verbose bool) (err error) {
+// unprotectMainBranch unprotects the main branch opf the given project
+func unprotectMainBranch(gl *gitlab.Client, pro *gitlab.Project, verbose bool) (err error) {
 	if pro.DefaultBranch != "" {
 		if verbose {
 			fmt.Printf("Unprotecting main branch %s of %s\n", pro.DefaultBranch, pro.PathWithNamespace)
