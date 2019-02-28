@@ -19,6 +19,8 @@ Usage of gitlab-force-upload:
         Token for GitLab (required)
   -url string
         GitLab URL to connect to (default "https://gitlab.com")
+  -pro
+        Assume that a non-community edition of GitLab is used
   -v    Log more verbose
 ```
 

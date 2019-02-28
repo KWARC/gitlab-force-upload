@@ -15,6 +15,7 @@ func main() {
 	if verbose {
 		fmt.Printf("verbose: %t\n", verbose)
 		fmt.Printf("gitlabURL: %q\n", gitlabURL)
+		fmt.Printf("gitlabPRO: %t\n", gitlabPro)
 		fmt.Printf("authToken: %q\n", authToken)
 		fmt.Printf("folder: %q\n", folder)
 		fmt.Printf("dest: %q\n", dest)
@@ -26,7 +27,7 @@ func main() {
 		fmt.Println("Preparing repository")
 	}
 
-	uri, user, token, err := src.PrepareRepo(authToken, gitlabURL, dest, verbose)
+	uri, user, token, err := src.PrepareRepo(authToken, gitlabURL, gitlabPro, dest, verbose)
 	if err != nil {
 		panic(err)
 	}
@@ -71,6 +72,7 @@ func main() {
 var legal bool
 var verbose bool
 var gitlabURL string
+var gitlabPro bool
 var authToken string
 var folder string
 var dest string
@@ -79,6 +81,7 @@ func init() {
 	flag.BoolVar(&verbose, "legal", false, "Show legal information and exit")
 	flag.BoolVar(&verbose, "v", false, "Log more verbose")
 	flag.StringVar(&gitlabURL, "url", "https://gitlab.com", "GitLab URL to connect to")
+	flag.BoolVar(&gitlabPro, "pro", false, "Assume that a non-community edition of GitLab is used")
 	flag.StringVar(&authToken, "token", "", "Token for GitLab (required)")
 	flag.StringVar(&folder, "folder", "", "Folder to upload to GitLab (required)")
 	flag.StringVar(&dest, "dest", "", "Destination repository (required)")

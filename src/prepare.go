@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/xanzy/go-gitlab"
+	gitlab "github.com/xanzy/go-gitlab"
 )
 
 // PrepareRepo makes sure that the repo exists and can be force pushed to
-func PrepareRepo(tokenIn string, url string, repo string, verbose bool) (uri string, user *gitlab.User, token string, err error) {
+func PrepareRepo(tokenIn string, url string, proEdition bool, repo string, verbose bool) (uri string, user *gitlab.User, token string, err error) {
 	// return the token again
 	token = tokenIn
 
@@ -22,7 +22,7 @@ func PrepareRepo(tokenIn string, url string, repo string, verbose bool) (uri str
 		return
 	}
 	// get or create the repo
-	pro, err := getOrCreate(gl, repo, verbose)
+	pro, err := getOrCreate(gl, proEdition, repo, verbose)
 	if err != nil {
 		return
 	}
@@ -39,7 +39,7 @@ func PrepareRepo(tokenIn string, url string, repo string, verbose bool) (uri str
 }
 
 // getOrCreate gets or create a new project
-func getOrCreate(gl *gitlab.Client, name string, verbose bool) (pro *gitlab.Project, err error) {
+func getOrCreate(gl *gitlab.Client, proEdition bool, name string, verbose bool) (pro *gitlab.Project, err error) {
 	pro, err = getProject(gl, name)
 	if err == nil {
 		if verbose {
@@ -51,7 +51,7 @@ func getOrCreate(gl *gitlab.Client, name string, verbose bool) (pro *gitlab.Proj
 	if verbose {
 		fmt.Printf("  Creating Project %s. \n", name)
 	}
-	return createProject(gl, name, verbose)
+	return createProject(gl, proEdition, name, verbose)
 }
 
 // getProject gets a single project
@@ -61,7 +61,7 @@ func getProject(gl *gitlab.Client, name string) (pro *gitlab.Project, err error)
 }
 
 // createProject create a new project
-func createProject(gl *gitlab.Client, name string, verbose bool) (pro *gitlab.Project, err error) {
+func createProject(gl *gitlab.Client, proEdition bool, name string, verbose bool) (pro *gitlab.Project, err error) {
 	// split into path and name and prepare options
 	repoPath, repoName := splitPath(name)
 
@@ -74,11 +74,22 @@ func createProject(gl *gitlab.Client, name string, verbose bool) (pro *gitlab.Pr
 		return
 	}
 
-	// and create the project in it
-	pro, _, err = gl.Projects.CreateProject(&gitlab.CreateProjectOptions{
+	// argument to create the gitlab project
+	createArgs := &gitlab.CreateProjectOptions{
 		Path:        &repoName,
 		NamespaceID: &ns.ID,
-	})
+	}
+
+	// the ultimate edition requires the 'ApprovalsBeforeMerge' flag
+	// or causes a database error that is exposed via the api
+	// this is a workaround
+	if proEdition {
+		zero := 0
+		createArgs.ApprovalsBeforeMerge = &zero
+	}
+
+	// and create the project in it
+	pro, _, err = gl.Projects.CreateProject(createArgs)
 
 	// done
 	return
