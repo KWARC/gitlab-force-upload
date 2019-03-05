@@ -58,7 +58,7 @@ func main() {
 		fmt.Println("Pushing repository")
 	}
 
-	err = src.PushToRemote(local, uri, user, token, verbose)
+	err = src.PushToRemote(folder, local, uri, user, token, verbose)
 	if err != nil {
 		panic(err)
 	}

@@ -41,7 +41,7 @@ To get `gitlab-force-upload` you have two options:
 - __Download a pre-built binary__. You can download a pre-built binary from the [releases page on GitHub](https://github.com/KWARC/gitlab-force-upload/releases/latest/). This page includes releases for Linux, Mac OS X and Windows. Note that these binaries are compressed with [`upx`](https://upx.github.io) in order to decrease executable size. 
 
 After obtaining the binary (through either of the two means), simply place it in your $PATH. 
-It does not depend on any external software (no need for git even).
+It does not depend on any external software (no need for git even, although having it may dramatically increase performance on big repositories).
 
 ## License
 
